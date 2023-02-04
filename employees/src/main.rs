@@ -1,4 +1,3 @@
-
 mod menus {
     use std::process::Command;
 
@@ -8,13 +7,12 @@ mod menus {
     }
     impl Menu {
         pub fn new(title: String, options: Vec<String>) -> Menu {
-            Menu {
-                title,
-                options,
-            }
+            Menu { title, options }
         }
         pub fn show(&self) {
-            Command::new("clear").status().expect("Failed to clear screen");
+            Command::new("clear")
+                .status()
+                .expect("Failed to clear screen");
             println!("{}", self.title);
             for (i, option) in self.options.iter().enumerate() {
                 println!("{}. {}", i + 1, option);
@@ -22,14 +20,18 @@ mod menus {
         }
         pub fn get_option(&self) -> usize {
             let mut option = String::new();
-            std::io::stdin().read_line(&mut option).expect("Failed to read line");
+            std::io::stdin()
+                .read_line(&mut option)
+                .expect("Failed to read line");
             let option: usize = option.trim().parse().expect("Please type a number!");
             option
         }
         pub fn wait(&self) {
             println!("Press enter to continue...");
             let mut option = String::new();
-            std::io::stdin().read_line(&mut option).expect("Failed to read line");
+            std::io::stdin()
+                .read_line(&mut option)
+                .expect("Failed to read line");
         }
     }
 }
@@ -42,7 +44,7 @@ mod employee {
         pub job_type: JobType,
     }
     #[derive(Clone)]
-    pub enum JobType{
+    pub enum JobType {
         FullTime,
         PartTime,
     }
@@ -54,11 +56,7 @@ mod employee {
     }
     impl Employee {
         pub fn new(name: String, age: u8, job: Job) -> Employee {
-            Employee {
-                name,
-                age,
-                job,
-            }
+            Employee { name, age, job }
         }
         pub fn get_name(&self) -> &str {
             &self.name
@@ -106,10 +104,12 @@ mod company {
         }
         pub fn delete_employee_from_department(&mut self, employee: Employee, department: &str) {
             let employees = self.departments.get_mut(department).unwrap();
-            let index = employees.iter().position(|e| e.get_name() == employee.get_name()).unwrap();
+            let index = employees
+                .iter()
+                .position(|e| e.get_name() == employee.get_name())
+                .unwrap();
             employees.remove(index);
         }
-
     }
 }
 
@@ -117,7 +117,6 @@ use std::process::Command;
 
 use crate::company::Company;
 use crate::employee::{Employee, Job, JobType};
-
 
 fn main() {
     let menus = menus::Menu::new(
@@ -134,7 +133,9 @@ fn main() {
     );
     let mut company_name = String::new();
     println!("Please enter the company name: ");
-    std::io::stdin().read_line(&mut company_name).expect("Failed to read line");
+    std::io::stdin()
+        .read_line(&mut company_name)
+        .expect("Failed to read line");
     let mut company = Company::new(company_name.trim().to_string());
     loop {
         menus.show();
@@ -142,24 +143,36 @@ fn main() {
         match option {
             // Add new employee
             1 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 let mut name = String::new();
                 println!("Please enter the employee name: ");
-                std::io::stdin().read_line(&mut name).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut name)
+                    .expect("Failed to read line");
                 let mut age = String::new();
                 println!("Please enter the employee age: ");
-                std::io::stdin().read_line(&mut age).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut age)
+                    .expect("Failed to read line");
                 let age: u8 = age.trim().parse().expect("Please type a number!");
                 let mut title = String::new();
                 println!("Please enter the employee job title: ");
-                std::io::stdin().read_line(&mut title).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut title)
+                    .expect("Failed to read line");
                 let mut salary = String::new();
                 println!("Please enter the employee salary: ");
-                std::io::stdin().read_line(&mut salary).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut salary)
+                    .expect("Failed to read line");
                 let salary: u32 = salary.trim().parse().expect("Please type a number!");
                 println!("Please enter the employee job type (1 - Full time, 2 - Part time): ");
                 let mut status = String::new();
-                std::io::stdin().read_line(&mut status).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut status)
+                    .expect("Failed to read line");
                 let status = match status.trim().parse().expect("Please type a number!") {
                     1 => JobType::FullTime,
                     2 => JobType::PartTime,
@@ -168,7 +181,7 @@ fn main() {
                 let job = Job {
                     title: title.trim().to_string(),
                     salary,
-                    job_type: status
+                    job_type: status,
                 };
                 let employee = Employee::new(name.trim().to_string(), age, job);
                 company.add_employee(employee);
@@ -176,37 +189,63 @@ fn main() {
             }
             // Add new department
             2 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 let mut department = String::new();
                 println!("Please enter the department name: ");
-                std::io::stdin().read_line(&mut department).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut department)
+                    .expect("Failed to read line");
                 company.add_new_department(department.trim().to_string());
                 menus.wait();
             }
             // Add employee to department
             3 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 let mut name = String::new();
                 println!("Please enter the employee name: ");
-                std::io::stdin().read_line(&mut name).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut name)
+                    .expect("Failed to read line");
                 let mut department = String::new();
                 println!("Please enter the department name: ");
-                std::io::stdin().read_line(&mut department).expect("Failed to read line");
-                let employee = company.get_employees().iter().find(|e| e.get_name() == name.trim()).unwrap();
+                std::io::stdin()
+                    .read_line(&mut department)
+                    .expect("Failed to read line");
+                let employee = company
+                    .get_employees()
+                    .iter()
+                    .find(|e| e.get_name() == name.trim())
+                    .unwrap();
                 company.add_employee_to_department(employee.clone(), department.trim());
                 menus.wait();
             }
             // Delete employee from department
             4 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 let mut name = String::new();
                 println!("Please enter the employee name: ");
-                std::io::stdin().read_line(&mut name).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut name)
+                    .expect("Failed to read line");
                 let mut department = String::new();
                 println!("Please enter the department name: ");
-                std::io::stdin().read_line(&mut department).expect("Failed to read line");
-                match company.get_employees().iter().find(|e| e.get_name() == name.trim()) {
-                    Some(employee) => company.delete_employee_from_department(employee.clone(), department.trim()),
+                std::io::stdin()
+                    .read_line(&mut department)
+                    .expect("Failed to read line");
+                match company
+                    .get_employees()
+                    .iter()
+                    .find(|e| e.get_name() == name.trim())
+                {
+                    Some(employee) => {
+                        company.delete_employee_from_department(employee.clone(), department.trim())
+                    }
                     None => println!("Employee not found"),
                 }
 
@@ -214,21 +253,37 @@ fn main() {
             }
             // Show all employees
             5 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 for employee in company.get_employees() {
-                    println!("Name: {}, Age: {}, Job: {}", employee.get_name(), employee.get_age(), employee.get_job().title);
+                    println!(
+                        "Name: {}, Age: {}, Job: {}",
+                        employee.get_name(),
+                        employee.get_age(),
+                        employee.get_job().title
+                    );
                 }
                 menus.wait();
             }
             // Show all employees by department
             6 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 println!("======================================================================");
                 let mut department = String::new();
                 println!("Please enter the department name: ");
-                std::io::stdin().read_line(&mut department).expect("Failed to read line");
+                std::io::stdin()
+                    .read_line(&mut department)
+                    .expect("Failed to read line");
                 for employee in company.get_employees_by_department(department.trim()) {
-                    println!("Name: {}, Age: {}, Job: {}", employee.get_name(), employee.get_age(), employee.get_job().title);
+                    println!(
+                        "Name: {}, Age: {}, Job: {}",
+                        employee.get_name(),
+                        employee.get_age(),
+                        employee.get_job().title
+                    );
                 }
                 println!("======================================================================");
 
@@ -236,18 +291,21 @@ fn main() {
             }
             // Exit
             7 => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 println!("Goodbye!");
                 menus.wait();
                 break;
             }
             // Invalid option
             _ => {
-                Command::new("clear").status().expect("Failed to clear screen");
+                Command::new("clear")
+                    .status()
+                    .expect("Failed to clear screen");
                 println!("Please enter a valid option!");
                 menus.wait();
             }
         }
     }
-
 }
