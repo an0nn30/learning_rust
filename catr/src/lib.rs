@@ -58,23 +58,21 @@ pub fn run(config: Config) -> MyResult<()> {
     for filename in config.files {
         match open(&filename) {
             Err(err) => eprintln!("Failed to open {}: {}", filename, err),
-            Ok(_) => {
-                if config.number_lines {
-                    for (i, line) in open(&filename)?.lines().enumerate() {
-                        println!("{:>6} {}", i + 1, line?);
-                    }
-                } else if config.number_nonblack_lines {
-                    for (i, line) in open(&filename)?.lines().enumerate() {
-                        let line = line?;
+            Ok(file) => {
+                let mut last_num = 0;
+                for (line_num, line_result) in file.lines().enumerate() {
+                    let line = line_result?;
+                    if config.number_lines {
+                        println!("{:6}\t{}", line_num + 1, line);
+                    } else if config.number_nonblack_lines {
                         if !line.is_empty() {
-                            println!("{:>6} {}", i + 1, line);
+                            last_num += 1;
+                           println!("{:6}\t{}", last_num, line);
                         } else {
-                            println!("{}", line);
+                            println!();
                         }
-                    }
-                } else {
-                    for line in open(&filename)?.lines() {
-                        println!("{}", line?);
+                    } else {
+                        println!("{}", line);
                     }
                 }
             }
