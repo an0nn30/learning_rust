@@ -194,3 +194,20 @@ fn all_n() -> TestResult {
 fn all_b() -> TestResult {
     run(&[FOX, SPIDERS, BUSTLE, "-b"], "tests/expected/all.b.out")
 }
+
+// --------------------------------------------------
+#[test]
+fn range_a() -> TestResult {
+    run(
+        &[SPIDERS, FOX, BUSTLE, "-r", "0:2"],
+        "tests/expected/range_a.out",
+    )
+}
+
+#[test]
+fn range_b() -> TestResult {
+    run(
+        &[SPIDERS, FOX, BUSTLE, "-r", "1:3"],
+        "tests/expected/range_b.out",
+    )
+}
