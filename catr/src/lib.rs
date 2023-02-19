@@ -11,6 +11,7 @@ pub struct Config {
     number_lines: bool,
     number_nonblank_lines: bool,
     line_range: Option<(usize, usize)>,
+    non_printing: bool,
 }
 
 impl Config {
@@ -19,12 +20,14 @@ impl Config {
         number_lines: bool,
         number_nonblank_lines: bool,
         line_range: Option<(usize, usize)>,
+        non_printing: bool,
     ) -> Self {
         Config {
             files,
             number_lines,
             number_nonblank_lines,
             line_range,
+            non_printing,
         }
     }
     fn fmt_number_lines(&self, line: &String, line_number: usize) -> String {
@@ -43,21 +46,26 @@ impl Config {
         let mut last_num = 0;
         for (line_num, line_result) in file.lines().enumerate() {
             if let Some((start, end)) = self.line_range {
-                if (line_num + 1 ) < start || (line_num + 1) > end {
+                if (line_num + 1) < start || (line_num + 1) > end {
                     continue;
                 }
             }
             let line = line_result.unwrap();
             if self.number_lines {
-                println!("{}", self.fmt_number_lines(&line, line_num).as_str())
+                println!(
+                    "{}{}",
+                    self.fmt_number_lines(&line, line_num).as_str(),
+                    if self.non_printing { "$" } else { "" }
+                )
             } else if self.number_nonblank_lines {
                 println!(
-                    "{}",
+                    "{}{}",
                     self.fmt_number_nonblank_lines(&line, &mut last_num)
-                        .as_str()
+                        .as_str(),
+                    if self.non_printing { "$" } else { "" }
                 );
             } else {
-                println!("{}", line);
+                println!("{}{}", line, if self.non_printing { "$" } else { "" });
             }
         }
     }
@@ -90,19 +98,19 @@ pub fn get_args() -> MyResult<Config> {
                 .takes_value(false),
         )
         .arg(
-            Arg::with_name("display_nonprinting")
-                .help("Display non-printing characters")
-                .short("v")
-                .long("show-nonprinting")
-                .takes_value(false),
-        )
-        .arg(
             Arg::with_name("line_range")
                 .help("Display only the specified line range")
                 .short("r")
                 .long("line-range")
                 .takes_value(true)
                 .value_name("start:end"),
+        )
+        .arg(
+            Arg::with_name("non_printing")
+                .help("Display non-printing characters")
+                .short("e")
+                .long("show-nonprinting")
+                .takes_value(false),
         )
         .get_matches();
 
@@ -116,6 +124,7 @@ pub fn get_args() -> MyResult<Config> {
             let end = split.next().unwrap().parse::<usize>().unwrap();
             (start, end)
         }),
+        matches.is_present("non_printing"),
     ))
 }
 

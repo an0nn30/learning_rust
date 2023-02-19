@@ -211,3 +211,11 @@ fn range_b() -> TestResult {
         "tests/expected/range_b.out",
     )
 }
+
+// #[test]
+// fn non_printing() -> TestResult {
+//     run(
+//         &[SPIDERS, FOX, BUSTLE, "-e"],
+//         "tests/expected/non_printing_a.out",
+//     )
+// }
